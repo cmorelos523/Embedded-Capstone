@@ -12,4 +12,5 @@ def img_USB():
   ret, frame = cap.read()
 
   if ret:
-    
+    cv2.imwrite("usb_img.jpg", frame)
+  cap.release()
