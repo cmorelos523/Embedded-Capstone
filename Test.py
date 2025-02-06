@@ -9,4 +9,7 @@ def img_csi():
 # Image from USB camera
 def img_USB():
   cap = cv2.VideoCapture(0)
-  
+  ret, frame = cap.read()
+
+  if ret:
+    
