@@ -17,4 +17,5 @@ def img_USB():
 
 # Possible while loop to keep the program running?
 img_csi()
+time.sleep(5)
 img_USB()
