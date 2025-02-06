@@ -16,3 +16,5 @@ def img_USB():
   cap.release()
 
 # Possible while loop to keep the program running?
+img_csi()
+img_USB()
