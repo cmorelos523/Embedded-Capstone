@@ -14,3 +14,5 @@ def img_USB():
   if ret:
     cv2.imwrite("usb_img.jpg", frame)
   cap.release()
+
+# Possible while loop to keep the program running?
