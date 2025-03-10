@@ -4,6 +4,11 @@ import ArducamDepthCamera as ac
 import pyttsx3
 import wave
 import tempfile
+import RPi.GPIO as gpio
+
+gpio.setwarnings(False)
+gpio.setmode(gpio.BCM)
+gpio.setup(17, gpio.IN, pull_up_down=gpio.PUD_DOWN)
 
 
 # Global variables 
