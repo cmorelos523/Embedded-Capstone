@@ -52,6 +52,19 @@ def generate_directions(graph, route):
     directions.append(f"You have reached your destination. Total distance: {total_distance:.0f} meters")
     return directions
 
+
+
+# Define start and end coordinates (latitude, longitude)
+start_lat, start_lon = 47.653346516120344, -122.30568970350731  # Example: Paul Allen School
+end_lat, end_lon = 47.656120282953864, -122.30913113341269    # Example: Red Square
+# Load the saved Seattle graph
+graph_seattle = ox.load_graphml('gps/seattle_graph.graphml')
+# Get the nearest nodes to the start and end locations
+start_node = ox.distance.nearest_nodes(graph_seattle, start_lon, start_lat)
+end_node = ox.distance.nearest_nodes(graph_seattle, end_lon, end_lat)
+
+# Compute the shortest path between these nodes
+route = nx.shortest_path(graph_seattle, start_node, end_node, weight='length')
 # Generate directions based on the route
 directions = generate_directions(graph_seattle, route)
 
