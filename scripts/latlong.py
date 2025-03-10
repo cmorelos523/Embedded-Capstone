@@ -22,3 +22,6 @@ def main():
                     
         print(f"Updated coordinates: {data}")
         time.sleep(5)
+
+if __name__ == "__main__":
+    main()
