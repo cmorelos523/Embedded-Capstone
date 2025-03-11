@@ -5,6 +5,7 @@ import pyttsx3
 import wave
 import tempfile
 import RPi.GPIO as gpio
+from ultralytics import YOLO
 
 
 gpio.setwarnings(False)
@@ -12,15 +13,19 @@ gpio.setmode(gpio.BCM)
 gpio.setup(17, gpio.IN, pull_up_down=gpio.PUD_DOWN)
 
 
-# Global variables 
+# Global variables
 threshold = 50  # 50 cm
 # Initialize TTS Engine
 engine = pyttsx3.init()
 
+frame_counter = 0
+model = YOLO('/home/cse475/Embedded-Capstone/runs/detect/train/weights/best.pt')
+output_dir = "output_images"
+
 # Set Speech Rate
 engine.setProperty('rate', 100)
 
-##########################Functions########################## 
+##########################Functions##########################
 
 def save_text_to_wav(text, filename="output.wav"):
     """ Convert text to speech and save it as a WAV file """
@@ -55,15 +60,32 @@ def findclosetdist(depth_map):
     # min_loc = np.unravel_index(np.argmin(depth_map), depth_map.shape)
     
     return min_dist
-##########################Main########################## 
+
+def capture_img_USB(output_path):
+    cap = cv2.VideoCapture(1)
+    ret, frame = cap.read()
+    if ret:
+        cv2.imwrite(output_path, frame)
+    cap.release()
+
+def run_CV_script():
+    img_path = f"frame_{frame_counter}.jpg"
+    capture_img_USB(img_path)
+    
+    results = model.predict(source=img_path, save=True, save_dir=output_dir)
+
+    print(f"Processed frame {frame_counter}. Output saved to {output_dir}")
+    
+    frame_counter += 1
+##########################Main##########################
 
 def main():
 
-    # Initialize camera 
+    # Initialize camera
     camera = ac.ArducamCamera()
     cfg_path = None
 
-    # Open camera 
+    # Open camera
     ret = 0
     if cfg_path is not None:
         ret = camera.openWithFile(cfg_path, 0)
@@ -94,7 +116,7 @@ def main():
                 left_depth = depth_map[0:int(width/2)][:]
                 right_depth = depth_map[int(width/2):width][:]
 
-                #Determine if anything is too close 
+                #Determine if anything is too close
                 too_close_left = np.any((left_depth > 0) & (left_depth < threshold))
                 too_close_right = np.any((right_depth > 0) & (right_depth < threshold))
                 # print(too_close)
@@ -112,6 +134,10 @@ def main():
                     print("No close objects")
                 # Release frame
                 camera.releaseFrame(depth_frame)
+
+            input_value = gpio.input(17)
+            if input_value == gpio.HIGH:
+                run_CV_script()
  
 
     except KeyboardInterrupt:
