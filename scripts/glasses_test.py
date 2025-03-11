@@ -1,3 +1,4 @@
+# hi
 import cv2
 import numpy as np
 import ArducamDepthCamera as ac
@@ -13,7 +14,7 @@ gpio.setmode(gpio.BCM)
 gpio.setup(17, gpio.IN, pull_up_down=gpio.PUD_DOWN)
 
 
-# Global variables
+# Global variables 
 threshold = 50  # 50 cm
 # Initialize TTS Engine
 engine = pyttsx3.init()
@@ -25,7 +26,7 @@ output_dir = "output_images"
 # Set Speech Rate
 engine.setProperty('rate', 100)
 
-##########################Functions##########################
+##########################Functions########################## 
 
 def save_text_to_wav(text, filename="output.wav"):
     """ Convert text to speech and save it as a WAV file """
@@ -77,15 +78,15 @@ def run_CV_script():
     print(f"Processed frame {frame_counter}. Output saved to {output_dir}")
     
     frame_counter += 1
-##########################Main##########################
+##########################Main########################## 
 
 def main():
 
-    # Initialize camera
+    # Initialize camera 
     camera = ac.ArducamCamera()
     cfg_path = None
 
-    # Open camera
+    # Open camera 
     ret = 0
     if cfg_path is not None:
         ret = camera.openWithFile(cfg_path, 0)
@@ -116,7 +117,7 @@ def main():
                 left_depth = depth_map[0:int(width/2)][:]
                 right_depth = depth_map[int(width/2):width][:]
 
-                #Determine if anything is too close
+                #Determine if anything is too close 
                 too_close_left = np.any((left_depth > 0) & (left_depth < threshold))
                 too_close_right = np.any((right_depth > 0) & (right_depth < threshold))
                 # print(too_close)
