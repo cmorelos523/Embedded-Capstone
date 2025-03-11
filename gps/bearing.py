@@ -1,6 +1,10 @@
 import osmnx as ox
 import networkx as nx
 import math
+import pyttsx3
+import wave
+import tempfile
+from obj_dis import save_text_to_wav
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
     dLon = lon2 - lon1
@@ -69,5 +73,5 @@ route = nx.shortest_path(graph_seattle, start_node, end_node, weight='length')
 directions = generate_directions(graph_seattle, route)
 
 # Print out the directions
-for step in directions:
-    print(step)
+for i, step in enumerate(directions):
+    save_text_to_wav(step, f"Filename {i}")
