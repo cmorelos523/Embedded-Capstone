@@ -4,7 +4,26 @@ import math
 import pyttsx3
 import wave
 import tempfile
-from obj_dis import save_text_to_wav
+
+
+def save_text_to_wav(text, filename="output.wav"):
+    """ Convert text to speech and save it as a WAV file """
+    print(f"Saving '{text}' as {filename}")
+
+    # Generate speech and save it to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
+        temp_filename = temp_wav.name
+        engine.save_to_file(text, temp_filename)
+        engine.runAndWait()
+
+    # Convert to a properly formatted WAV file
+    with wave.open(temp_filename, 'rb') as original_wav, wave.open(filename, 'wb') as new_wav:
+        new_wav.setnchannels(original_wav.getnchannels())
+        new_wav.setsampwidth(original_wav.getsampwidth())
+        new_wav.setframerate(original_wav.getframerate())
+        new_wav.writeframes(original_wav.readframes(original_wav.getnframes()))
+
+    print(f"Audio saved as {filename}")
 
 def calculate_bearing(lat1, lon1, lat2, lon2):
     dLon = lon2 - lon1
@@ -56,13 +75,17 @@ def generate_directions(graph, route):
     directions.append(f"You have reached your destination. Total distance: {total_distance:.0f} meters")
     return directions
 
+# Initialize TTS Engine
+engine = pyttsx3.init()
 
+# Set Speech Rate
+engine.setProperty('rate', 100)
 
 # Define start and end coordinates (latitude, longitude)
 start_lat, start_lon = 47.653346516120344, -122.30568970350731  # Example: Paul Allen School
 end_lat, end_lon = 47.656120282953864, -122.30913113341269    # Example: Red Square
 # Load the saved Seattle graph
-graph_seattle = ox.load_graphml('gps/seattle_graph.graphml')
+graph_seattle = ox.load_graphml('seattle_graph.graphml')
 # Get the nearest nodes to the start and end locations
 start_node = ox.distance.nearest_nodes(graph_seattle, start_lon, start_lat)
 end_node = ox.distance.nearest_nodes(graph_seattle, end_lon, end_lat)
@@ -74,4 +97,4 @@ directions = generate_directions(graph_seattle, route)
 
 # Print out the directions
 for i, step in enumerate(directions):
-    save_text_to_wav(step, f"Filename {i}")
+    save_text_to_wav(str(step), f"Filename{i}.wav")
